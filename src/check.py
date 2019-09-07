@@ -7,7 +7,9 @@ import sys
 def main(input_file, output_file):
     print('Input file: ' + input_file)
     print('Output file: ' + output_file)
-    couriers, orders, points = load_data(input_file)
+    couriers, orders, depots = load_data(input_file)
+    print(couriers[1]["location"])
+
     with open(output_file, 'r') as f:
         output_data = json.load(f)
     for step, event in enumerate(output_data):
@@ -16,13 +18,16 @@ def main(input_file, output_file):
         order_id = event['order_id']
         point_id = event['point_id']
         courier = couriers[courier_id]
-        point = points[point_id]
+        point = depots[point_id]
         order = orders[order_id]
 
         # Последнее местоположение курьера
         courier_location = courier['location']
+        for i, order1 in orders.items():
+            print(order1["pickup_location_x"],order1["pickup_location_y"])
         # Местоположение точки назначения, куда направляется курьер
         destination_location = point['location']
+        print(destination_location)
         # Время перемещения до точки назначения
         duration_minutes = get_travel_duration_minutes(courier_location, destination_location)
         # Самое раннее время, в которое курьер может оказаться на точке назначения
@@ -70,10 +75,10 @@ def main(input_file, output_file):
     for order_id, order in orders.items():
         pickup_point_id = order['pickup_point_id']
         dropoff_point_id = order['dropoff_point_id']
-        if 'order_time' in points[dropoff_point_id] and order_id in points[dropoff_point_id]['order_time']:
+        if 'order_time' in depots[dropoff_point_id] and order_id in depots[dropoff_point_id]['order_time']:
             orders_payment += order['payment']
             print('Order #{} completed'.format(order_id))
-        elif 'order_time' in points[pickup_point_id] and order_id in points[pickup_point_id]['order_time']:
+        elif 'order_time' in depots[pickup_point_id] and order_id in depots[pickup_point_id]['order_time']:
             print('Order #{} unassigned'.format(order_id))
         else:
             print('Order #{} unfinished'.format(order_id))
@@ -143,5 +148,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         input_file = sys.argv[1]
         output_file = sys.argv[2]
+
 
     main(input_file, output_file)
