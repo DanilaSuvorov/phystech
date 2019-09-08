@@ -59,7 +59,7 @@ def main(input_file, output_file):
                     if time <= min_time:
                         priority_order_drop = order1
                         min_time = time
-                elif courier["time"] + 500 >= order1["dropoff_to"] and order1 in taken_orders and not (order1 in complete_orders):
+                elif courier["time"] +500 >= order1["dropoff_to"] and order1 in taken_orders and not (order1 in complete_orders):
                     priority_order_drop = order1
 
             if priority_order_take != 0:
@@ -138,7 +138,7 @@ def main(input_file, output_file):
 
     # Считаем общую продолжительность работы курьера в минутах
     work_duration = sum([x['time'] - 360 for x in couriers.values()])
-    work_payment = work_duration * 2
+    work_payment = work_duration
     profit = orders_payment - work_payment
 
     print('Total orders payment: {}'.format(orders_payment))
@@ -200,7 +200,7 @@ def is_depot_point(point_id):
 
 if __name__ == '__main__':
     example_dir = os.path.dirname(os.path.abspath(__file__)) + '/../data'
-    input_file = example_dir + '/contest_input.json'
+    input_file = example_dir + '/ref.json'
     example_dir = os.path.dirname(os.path.abspath(__file__)) + '/../example'
     output_file = example_dir + '/output.json'
     if len(sys.argv) > 2:
