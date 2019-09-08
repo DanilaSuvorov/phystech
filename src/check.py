@@ -5,89 +5,118 @@ import os
 import sys
 
 def main(input_file, output_file):
+    global priority_order_take
     print('Input file: ' + input_file)
     print('Output file: ' + output_file)
     couriers, orders, depots = load_data(input_file)
-    print(couriers[1]["location"])
+
 
     with open(output_file, 'r') as f:
         output_data = json.load(f)
-    for step, event in enumerate(output_data):
-        courier_id = event['courier_id']
-        action = event['action']
-        order_id = event['order_id']
-        point_id = event['point_id']
-        courier = couriers[courier_id]
-        point = depots[point_id]
-        order = orders[order_id]
+    taken_orders = []
+    complete_orders = []
+    while len(complete_orders) < len(orders):
+        for step, event in enumerate(output_data):
+            courier_id = event['courier_id']
+            action = event['action']
+            point_id = event['point_id']
+            courier = couriers[courier_id]
+            point = depots[point_id]
 
-        # Последнее местоположение курьера
-        courier_location = courier['location']
-        for i, order1 in orders.items():
-            print(order1["pickup_location_x"],order1["pickup_location_y"])
-        # Местоположение точки назначения, куда направляется курьер
-        destination_location = point['location']
-        print(destination_location)
-        # Время перемещения до точки назначения
-        duration_minutes = get_travel_duration_minutes(courier_location, destination_location)
-        # Самое раннее время, в которое курьер может оказаться на точке назначения
-        visit_time = courier['time'] + duration_minutes
+            # Последнее местоположение курьера
+            courier_location = courier['location']
+            min_time = 10000
+            priority_order = 0
+            priority_order_drop = 0
+            priority_order_take = 0
+            for i, order1 in orders.items():
+                open_time = order1["pickup_from"]
+                x0 = courier_location[0]
+                y0 = courier_location[1]
+                x1 = order1["pickup_location_x"]
+                y1 = order1["pickup_location_y"]
+                x2 = order1["dropoff_location_x"]
+                y2 = order1["dropoff_location_y"]
+                travel_time = 10 + (abs(x0 - x1) + abs(y0 - y1))
+                travel_time2 = 10 + (abs(x0 - x2) + abs(y0 - y2))
+                if (courier["time"] + travel_time) <= order1["pickup_to"] and not (order1 in taken_orders):
+                    wait_time = abs(open_time - (courier["time"] + travel_time))
+                    time = travel_time + wait_time
+                    if time <= min_time:
+                        priority_order_take = order1
+                        min_time = time
+                if (courier["time"] + travel_time2) <= order1["dropoff_to"] and order1 in taken_orders and not (
+                        order1 in complete_orders):
 
-        if visit_time < point['timewindow'][0]:
-            # Если курьер прибывает раньше левой границы временного интервала на точке, то он ждет начала интервала
-            visit_time = point['timewindow'][0]
-        elif visit_time > point['timewindow'][1]:
-            # Если курьер прибывает позже правой границы временного интервала на точке, то это опоздание
-            raise Exception('Courier will be late')
+                    wait_time = abs(open_time - (courier["time"] + travel_time2))
+                    time = travel_time2 + wait_time
+                    if time <= min_time:
+                        priority_order_drop = order1
+                        min_time = time
+            if priority_order_take != 0:
+                taken_orders.append(priority_order_take)
+                priority_order = priority_order_take
+                print("take")
+            elif priority_order_drop != 0:
+                complete_orders.append(priority_order_drop)
+                priority_order = priority_order_drop
+                print("drop")
+            print(priority_order)
+            if priority_order != 0:
+                order_id = priority_order['order_id']
+                order = orders[order_id]
+                # Местоположение точки назначения, куда направляется курьер
+                destination_location = [priority_order["pickup_location_x"], priority_order["pickup_location_y"]]
+                print(destination_location)
+                # Время перемещения до точки назначения
+                duration_minutes = get_travel_duration_minutes(courier_location, destination_location)
+                # Самое раннее время, в которое курьер может оказаться на точке назначения
+                visit_time = courier['time'] + duration_minutes
+                courier["time"] = visit_time
 
-        if action == 'pickup':
-            # Если order_id сейчас не в точке point_id, то ошибка
-            if 'order_time' not in point or order_id not in point['order_time']:
-                raise Exception('Cant pickup')
-            # Если курьер едет за заказом на склад, то, возможно, ему нужно будет подождать появления этого заказа на складе
-            if is_depot_point(point_id) and visit_time < point['order_time'][order_id]:
-                visit_time = point['order_time'][order_id]
-            # Курьер забрал заказ, удаляем информацию о том, с какого времени заказ находится в этой точке
-            point.pop('order_time', None)
-        elif action == 'dropoff':
-            # Если point_id, не id склада или id точки dropoff заказа order_id, то ошибка (курьер привез заказ не туда)
-            if not is_depot_point(point_id) and (point_id != order['dropoff_point_id']):
-                raise Exception('Cant dropoff')
+                if visit_time < point['timewindow'][0]:
+                    # Если курьер прибывает раньше левой границы временного интервала на точке, то он ждет начала интервала
+                    visit_time = point['timewindow'][0]
+                elif visit_time > point['timewindow'][1]:
+                    # Если курьер прибывает позже правой границы временного интервала на точке, то это опоздание
+                    raise Exception('Courier will be late')
 
-            # Добавляем информацию о времени появления заказа на точке
-            point['order_time'] = {}
-            point['order_time'][order_id] = visit_time
-        else:
-            raise Exception('Unknown action')
+                if action == 'pickup':
+                    # Если order_id сейчас не в точке point_id, то ошибка
+                    """if 'order_time' not in point or order_id not in point['order_time']:
+                        raise Exception('Cant pickup')
+                    # Если курьер едет за заказом на склад, то, возможно, ему нужно будет подождать появления этого заказа на складе
+                    if is_depot_point(point_id) and visit_time < point['order_time'][order_id]:
+                        visit_time = point['order_time'][order_id]"""
+                    # Курьер забрал заказ, удаляем информацию о том, с какого времени заказ находится в этой точке
+                    point.pop('order_time', None)
+                elif action == 'dropoff':
+                    # Если point_id, не id склада или id точки dropoff заказа order_id, то ошибка (курьер привез заказ не туда)
+                    """if not is_depot_point(point_id) and (point_id != order['dropoff_point_id']):
+                        raise Exception('Cant dropoff')"""
 
-        # Обновляем время и местоположение курьера
-        courier['time'] = visit_time
-        courier['location'] = destination_location
+                    # Добавляем информацию о времени появления заказа на точке
+                    point['order_time'] = {}
+                    point['order_time'][order_id] = visit_time
+                else:
+                    raise Exception('Unknown action')
 
-        print('{}. Courier #{} {} order #{} at point #{} at time {}'.format(step, courier_id, action, order_id, point_id, visit_time))
+                # Обновляем время и местоположение курьера
+                courier['time'] = visit_time
+                courier['location'] = destination_location
 
-    print('Routes ok')
+
 
     # Проверяем, что курьеры выполнили все заказы, которые взяли
     # И посчитаем общую стоимость выполненных заказов
     has_unfinished_orders = False
     orders_payment = 0
+    print(complete_orders)
+    print(taken_orders)
     for order_id, order in orders.items():
         pickup_point_id = order['pickup_point_id']
         dropoff_point_id = order['dropoff_point_id']
-        if 'order_time' in depots[dropoff_point_id] and order_id in depots[dropoff_point_id]['order_time']:
-            orders_payment += order['payment']
-            print('Order #{} completed'.format(order_id))
-        elif 'order_time' in depots[pickup_point_id] and order_id in depots[pickup_point_id]['order_time']:
-            print('Order #{} unassigned'.format(order_id))
-        else:
-            print('Order #{} unfinished'.format(order_id))
-            has_unfinished_orders = True
-
-    if has_unfinished_orders:
-        raise Exception('Not all started orders are completed')
-
-    print('Orders ok')
+        orders_payment += order['payment']
 
     # Считаем общую продолжительность работы курьера в минутах
     work_duration = sum([x['time'] - 360 for x in couriers.values()])
