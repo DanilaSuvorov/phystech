@@ -11,8 +11,7 @@ def main(input_file, output_file):
     couriers, orders, depots = load_data(input_file)
 
 
-    with open(output_file, 'r') as f:
-        output_data = json.load(f)
+
     taken_orders = []
     complete_orders = []
     failed_orders = []
@@ -127,7 +126,7 @@ def main(input_file, output_file):
     # Проверяем, что курьеры выполнили все заказы, которые взяли
     # И посчитаем общую стоимость выполненных заказов
     has_unfinished_orders = False
-    orders_payment = 0
+    orders_payment = 300000
     print(complete_orders)
     print(taken_orders)
     print(failed_orders)
@@ -137,15 +136,13 @@ def main(input_file, output_file):
         orders_payment += order['payment']
 
     # Считаем общую продолжительность работы курьера в минутах
-    work_duration = sum([x['time'] - 360 for x in couriers.values()])
-    work_payment = work_duration *2
+    work_duration = sum([x['time'] - 360 for x in couriers.values()]) + l00
+    work_payment = work_duration
     profit = orders_payment - work_payment
 
     print('Total orders payment: {}'.format(orders_payment))
     print('Total couriers payment: {}'.format(work_payment))
     print('Profit: {}'.format(profit))
-
-
 
 
 def add(courier_id, action, order__id, point_id):
