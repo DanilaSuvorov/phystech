@@ -138,7 +138,7 @@ def main(input_file, output_file):
 
     # Считаем общую продолжительность работы курьера в минутах
     work_duration = sum([x['time'] - 360 for x in couriers.values()])
-    work_payment = work_duration
+    work_payment = work_duration *2
     profit = orders_payment - work_payment
 
     print('Total orders payment: {}'.format(orders_payment))
