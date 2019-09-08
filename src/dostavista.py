@@ -23,7 +23,6 @@ def main(input_file, output_file):
             action = event['action']
             point_id = event['point_id']
             courier = couriers[1]
-            point = depots[point_id]
 
             # Последнее местоположение курьера
             courier_location = courier['location']
@@ -80,33 +79,11 @@ def main(input_file, output_file):
                 print(duration_minutes)
                 visit_time = courier['time'] + duration_minutes
 
-                if visit_time < point['timewindow'][0]:
-                    # Если курьер прибывает раньше левой границы временного интервала на точке, то он ждет начала интервала
-                    visit_time = point['timewindow'][0]
-                elif visit_time > point['timewindow'][1]:
+                if visit_time > priority_order['pickup_to']:
                     # Если курьер прибывает позже правой границы временного интервала на точке, то это опоздание
                     # raise Exception('Courier will be late')
                     failed_orders.append(priority_order)
 
-                if action == 'pickup':
-                    # Если order_id сейчас не в точке point_id, то ошибка
-                    """if 'order_time' not in point or order_id not in point['order_time']:
-                        raise Exception('Cant pickup')
-                    # Если курьер едет за заказом на склад, то, возможно, ему нужно будет подождать появления этого заказа на складе
-                    if is_depot_point(point_id) and visit_time < point['order_time'][order_id]:
-                        visit_time = point['order_time'][order_id]"""
-                    # Курьер забрал заказ, удаляем информацию о том, с какого времени заказ находится в этой точке
-                    point.pop('order_time', None)
-                elif action == 'dropoff':
-                    # Если point_id, не id склада или id точки dropoff заказа order_id, то ошибка (курьер привез заказ не туда)
-                    """if not is_depot_point(point_id) and (point_id != order['dropoff_point_id']):
-                        raise Exception('Cant dropoff')"""
-
-                    # Добавляем информацию о времени появления заказа на точке
-                    point['order_time'] = {}
-                    point['order_time'][order_id] = visit_time
-                else:
-                    raise Exception('Unknown action')
 
                 # Обновляем время и местоположение курьера
                 courier['time'] = courier["time"] + duration_minutes
@@ -127,33 +104,11 @@ def main(input_file, output_file):
                 # Самое раннее время, в которое курьер может оказаться на точке назначения
                 visit_time = courier['time'] + duration_minutes
 
-                if visit_time < point['timewindow'][0]:
-                    # Если курьер прибывает раньше левой границы временного интервала на точке, то он ждет начала интервала
-                    visit_time = point['timewindow'][0]
-                elif visit_time > point['timewindow'][1]:
+                if visit_time > priority_order['dropoff_to']:
                     # Если курьер прибывает позже правой границы временного интервала на точке, то это опоздание
                     # raise Exception('Courier will be late')
                     failed_orders.append(priority_order)
 
-                if action == 'pickup':
-                    # Если order_id сейчас не в точке point_id, то ошибка
-                    """if 'order_time' not in point or order_id not in point['order_time']:
-                        raise Exception('Cant pickup')
-                    # Если курьер едет за заказом на склад, то, возможно, ему нужно будет подождать появления этого заказа на складе
-                    if is_depot_point(point_id) and visit_time < point['order_time'][order_id]:
-                        visit_time = point['order_time'][order_id]"""
-                    # Курьер забрал заказ, удаляем информацию о том, с какого времени заказ находится в этой точке
-                    point.pop('order_time', None)
-                elif action == 'dropoff':
-                    # Если point_id, не id склада или id точки dropoff заказа order_id, то ошибка (курьер привез заказ не туда)
-                    """if not is_depot_point(point_id) and (point_id != order['dropoff_point_id']):
-                        raise Exception('Cant dropoff')"""
-
-                    # Добавляем информацию о времени появления заказа на точке
-                    point['order_time'] = {}
-                    point['order_time'][order_id] = visit_time
-                else:
-                    raise Exception('Unknown action')
 
                 # Обновляем время и местоположение курьера
                 courier['time'] = courier["time"] + duration_minutes
@@ -233,7 +188,7 @@ def is_depot_point(point_id):
 
 if __name__ == '__main__':
     example_dir = os.path.dirname(os.path.abspath(__file__)) + '/../data'
-    input_file = example_dir + '/simple_input.json'
+    input_file = example_dir + '/contest_input.json'
     example_dir = os.path.dirname(os.path.abspath(__file__)) + '/../example'
     output_file = example_dir + '/output.json'
     if len(sys.argv) > 2:
