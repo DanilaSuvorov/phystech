@@ -59,7 +59,7 @@ def main(input_file, output_file):
                     if time <= min_time:
                         priority_order_drop = order1
                         min_time = time
-                elif courier["time"] + 400 >= order1["dropoff_to"] and order1 in taken_orders and not (order1 in complete_orders):
+                elif courier["time"] + 500 >= order1["dropoff_to"] and order1 in taken_orders and not (order1 in complete_orders):
                     priority_order_drop = order1
 
             if priority_order_take != 0:

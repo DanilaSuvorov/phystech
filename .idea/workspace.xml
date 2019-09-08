@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1bc62aeb-c16c-42ef-8b60-8db85ebb0c6b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/example/output.json" beforeDir="false" afterPath="$PROJECT_DIR$/example/output.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dostavista.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dostavista.py" afterDir="false" />
-    </list>
+    <list default="true" id="1bc62aeb-c16c-42ef-8b60-8db85ebb0c6b" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,8 +48,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/dostavista.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2489">
-              <caret line="154" column="21" selection-start-line="154" selection-start-column="21" selection-end-line="154" selection-end-column="21" />
+            <state relative-caret-position="-4">
+              <caret line="177" column="49" selection-start-line="177" selection-start-column="49" selection-end-line="177" selection-end-column="49" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -64,7 +61,7 @@
         <entry file="file://$PROJECT_DIR$/example/output.json">
           <provider selected="true" editor-type-id="text-editor">
             <state>
-              <caret column="1" lean-forward="true" selection-start-column="1" selection-end-column="1" />
+              <caret column="7740" selection-start-column="7740" selection-end-column="7740" />
             </state>
           </provider>
         </entry>
@@ -95,6 +92,7 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/Answers.md" />
         <option value="$PROJECT_DIR$/data/contest_input.json" />
+        <option value="$PROJECT_DIR$/example/output.json" />
         <option value="$PROJECT_DIR$/src/dostavista.py" />
       </list>
     </option>
@@ -225,8 +223,18 @@
     </task>
     <servers />
   </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19550858" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -335,8 +343,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/dostavista.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2489">
-          <caret line="154" column="21" selection-start-line="154" selection-start-column="21" selection-end-line="154" selection-end-column="21" />
+        <state relative-caret-position="-4">
+          <caret line="177" column="49" selection-start-line="177" selection-start-column="49" selection-end-line="177" selection-end-column="49" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -346,7 +354,7 @@
     <entry file="file://$PROJECT_DIR$/example/output.json">
       <provider selected="true" editor-type-id="text-editor">
         <state>
-          <caret column="1" lean-forward="true" selection-start-column="1" selection-end-column="1" />
+          <caret column="7740" selection-start-column="7740" selection-end-column="7740" />
         </state>
       </provider>
     </entry>
