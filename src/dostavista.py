@@ -1,11 +1,11 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
 import json
 import os
 import sys
 
 def main(input_file, output_file):
     global priority_order_take
+    global output1
+    output1 = []
     print('Input file: ' + input_file)
     print('Output file: ' + output_file)
     couriers, orders, depots = load_data(input_file)
@@ -19,9 +19,9 @@ def main(input_file, output_file):
     a = False
     while (len(complete_orders) < len(orders)) and not(a):
         for step, event in enumerate(output_data):
-            courier_id = event['courier_id']
-            action = event['action']
-            point_id = event['point_id']
+            #courier_id = event['courier_id']
+            #ction = event['action']
+            #point_id = event['point_id']
             courier = couriers[1]
 
             # Последнее местоположение курьера
@@ -79,7 +79,7 @@ def main(input_file, output_file):
                 print(duration_minutes)
                 visit_time = courier['time'] + duration_minutes
 
-                if visit_time > priority_order['pickup_to']:
+                if visit_time > priority_order["dropoff_to"]:
                     # Если курьер прибывает позже правой границы временного интервала на точке, то это опоздание
                     # raise Exception('Courier will be late')
                     failed_orders.append(priority_order)
@@ -104,11 +104,6 @@ def main(input_file, output_file):
                 # Самое раннее время, в которое курьер может оказаться на точке назначения
                 visit_time = courier['time'] + duration_minutes
 
-                if visit_time > priority_order['dropoff_to']:
-                    # Если курьер прибывает позже правой границы временного интервала на точке, то это опоздание
-                    # raise Exception('Courier will be late')
-                    failed_orders.append(priority_order)
-
 
                 # Обновляем время и местоположение курьера
                 courier['time'] = courier["time"] + duration_minutes
@@ -118,6 +113,12 @@ def main(input_file, output_file):
             #print(priority_order)
             #print(courier["time"])
             #print(courier["location"])
+            if priority_order_drop != 0:
+                 add(1,"dropoff",priority_order_drop["order_id"],priority_order_drop["dropoff_point_id"])
+            elif priority_order_take != 0:
+                add(1,"pickup",priority_order_take["order_id"],priority_order_take["pickup_point_id"])
+
+
 
 
 
@@ -142,6 +143,16 @@ def main(input_file, output_file):
     print('Total orders payment: {}'.format(orders_payment))
     print('Total couriers payment: {}'.format(work_payment))
     print('Profit: {}'.format(profit))
+
+
+
+
+def add(courier_id, action, order__id, point_id):
+ with open(output_file, mode='w+', encoding='utf-8') as feedsjson:
+    """feeds = json.load(feedsjson)"""
+    entry = {'courier_id': courier_id, 'action': action, 'order__id': order__id, 'point_id': point_id}
+    output1.append(entry)
+    json.dump(output1, feedsjson)
 
 
 def load_data(file):
