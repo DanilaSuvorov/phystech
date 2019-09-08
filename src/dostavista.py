@@ -41,9 +41,6 @@ def main(input_file, output_file):
                 y2 = order1["dropoff_location_y"]
                 travel_time = 10 + (abs(x0 - x1) + abs(y0 - y1))
                 travel_time2 = 10 + (abs(x0 - x2) + abs(y0 - y2))
-                if courier["time"] + 500 >= order1["dropoff_to"]:
-                    priority_order_drop = order1
-                    break
                 if (courier["time"] + travel_time) <= order1["pickup_to"] and not (order1 in taken_orders):
                     if open_time - (courier["time"] + travel_time2) < 0:
                         wait_time = abs(travel_time)
@@ -53,8 +50,7 @@ def main(input_file, output_file):
                     if time <= min_time:
                         priority_order_take = order1
                         min_time = time
-                if (courier["time"] + travel_time2) <= order1["dropoff_to"] and order1 in taken_orders and not (
-                        order1 in complete_orders):
+                elif (courier["time"] + travel_time2) <= order1["dropoff_to"] and order1 in taken_orders and not (order1 in complete_orders):
                     if open_time2 - (courier["time"] + travel_time2) < 0:
                         wait_time = abs(travel_time2)
                     else:
@@ -63,6 +59,9 @@ def main(input_file, output_file):
                     if time <= min_time:
                         priority_order_drop = order1
                         min_time = time
+                elif courier["time"] + 400 >= order1["dropoff_to"] and order1 in taken_orders and not (order1 in complete_orders):
+                    priority_order_drop = order1
+
             if priority_order_take != 0:
                 taken_orders.append(priority_order_take)
                 priority_order = priority_order_take
@@ -88,6 +87,8 @@ def main(input_file, output_file):
                 # Обновляем время и местоположение курьера
                 courier['time'] = courier["time"] + duration_minutes
                 courier['location'] = destination_location
+
+
             elif priority_order_drop != 0:
                 complete_orders.append(priority_order_drop)
                 priority_order = priority_order_drop
